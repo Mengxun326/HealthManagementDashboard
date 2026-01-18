@@ -1,0 +1,114 @@
+# 应用配置文件示例
+# 
+# 使用方法：
+# 1. 复制此文件为 application.yml
+# 2. 修改以下配置项：
+#    - 数据库用户名和密码
+#    - JWT密钥（生产环境必须修改）
+#    - 文件上传路径
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+spring:
+  application:
+    name: health-management-backend
+  
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/health_management?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:your_password_here}  # ⚠️ 修改为你的数据库密码
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      filters: stat,wall,slf4j
+      connection-properties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 50MB
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+# MyBatis Plus配置
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: org.jeecg.modules.health.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    call-setters-on-nulls: true
+    jdbc-type-for-null: 'null'
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: ASSIGN_ID
+      logic-delete-field: del_flag
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# JWT配置
+jwt:
+  secret: ${JWT_SECRET:your-jwt-secret-key-here}  # ⚠️ 生产环境必须修改为强密码（建议32位以上随机字符串）
+  expiration: 86400000  # 24小时，单位：毫秒
+  header: Authorization
+  token-prefix: Bearer 
+
+# 文件上传配置
+file:
+  upload:
+    path: ${FILE_UPLOAD_PATH:./upload}  # ⚠️ 修改为你的上传目录路径
+    max-size: 10485760  # 10MB
+
+# Knife4j配置
+knife4j:
+  enable: true
+  openapi:
+    title: 医疗健康管理系统API文档
+    description: 医疗健康管理系统后端API接口文档
+    email: admin@example.com
+    concat: 管理员
+    url: https://www.example.com
+    version: v1.0.0
+    group:
+      default:
+        group-name: default
+        api-rule: package
+        api-rule-resources:
+          - org.jeecg.modules.health.controller
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    org.jeecg.modules: DEBUG
+    com.baomidou.mybatisplus: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n"
+  file:
+    name: logs/health-management.log
+    max-size: 10MB
+    max-history: 30

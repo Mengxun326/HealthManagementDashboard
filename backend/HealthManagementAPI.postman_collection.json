@@ -1,0 +1,840 @@
+{
+	"info": {
+		"_postman_id": "health-management-api",
+		"name": "医疗健康管理系统API",
+		"description": "医疗健康管理系统后端API接口集合",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. 认证相关",
+			"item": [
+				{
+					"name": "用户登录",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.token) {",
+									"        pm.environment.set(\"token\", jsonData.data.token);",
+									"        pm.environment.set(\"userId\", jsonData.data.userId);",
+									"        console.log(\"Token已保存到环境变量\");",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "用户登出",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/logout",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "logout"]
+						}
+					}
+				},
+				{
+					"name": "获取当前用户信息",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/userinfo",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "userinfo"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. 患者管理",
+			"item": [
+				{
+					"name": "获取患者信息",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/patient/info",
+							"host": ["{{base_url}}"],
+							"path": ["api", "patient", "info"]
+						}
+					}
+				},
+				{
+					"name": "更新患者信息",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"张三\",\n  \"gender\": 1,\n  \"birthDate\": \"1990-01-01\",\n  \"phone\": \"13800138000\",\n  \"idCard\": \"110101199001011234\",\n  \"address\": \"北京市朝阳区xxx\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/patient/info",
+							"host": ["{{base_url}}"],
+							"path": ["api", "patient", "info"]
+						}
+					}
+				},
+				{
+					"name": "获取健康画像摘要",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/patient/health-summary",
+							"host": ["{{base_url}}"],
+							"path": ["api", "patient", "health-summary"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. 健康指标管理",
+			"item": [
+				{
+					"name": "获取健康指标列表",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/health/metric/list?current=1&size=10&metricType=BLOOD_PRESSURE",
+							"host": ["{{base_url}}"],
+							"path": ["api", "health", "metric", "list"],
+							"query": [
+								{
+									"key": "current",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "metricType",
+									"value": "BLOOD_PRESSURE",
+									"description": "BLOOD_PRESSURE, BLOOD_SUGAR, CHOLESTEROL, BMI"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "添加健康指标-血压",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"metricType\": \"BLOOD_PRESSURE\",\n  \"metricValue\": 135.00,\n  \"recordDate\": \"2024-01-20\",\n  \"normalRangeMin\": 90.00,\n  \"normalRangeMax\": 140.00,\n  \"remark\": \"早晨测量\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/health/metric/add",
+							"host": ["{{base_url}}"],
+							"path": ["api", "health", "metric", "add"]
+						}
+					}
+				},
+				{
+					"name": "添加健康指标-血糖",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"metricType\": \"BLOOD_SUGAR\",\n  \"metricValue\": 6.2,\n  \"recordDate\": \"2024-01-20\",\n  \"normalRangeMin\": 3.9,\n  \"normalRangeMax\": 6.1,\n  \"remark\": \"空腹血糖\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/health/metric/add",
+							"host": ["{{base_url}}"],
+							"path": ["api", "health", "metric", "add"]
+						}
+					}
+				},
+				{
+					"name": "获取健康指标趋势数据",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/health/metric/trend?metricType=BLOOD_PRESSURE&startDate=2024-01-01&endDate=2024-01-31",
+							"host": ["{{base_url}}"],
+							"path": ["api", "health", "metric", "trend"],
+							"query": [
+								{
+									"key": "metricType",
+									"value": "BLOOD_PRESSURE"
+								},
+								{
+									"key": "startDate",
+									"value": "2024-01-01"
+								},
+								{
+									"key": "endDate",
+									"value": "2024-01-31"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "获取异常指标列表",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/health/metric/abnormal",
+							"host": ["{{base_url}}"],
+							"path": ["api", "health", "metric", "abnormal"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. 体检报告管理",
+			"item": [
+				{
+					"name": "获取报告列表",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/health/report/list?current=1&size=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "health", "report", "list"],
+							"query": [
+								{
+									"key": "current",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "获取报告详情",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/health/report/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "health", "report", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "报告ID"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "上传体检报告",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "reportType",
+									"value": "血常规+血脂检查",
+									"type": "text"
+								},
+								{
+									"key": "reportDate",
+									"value": "2024-01-20",
+									"type": "text"
+								},
+								{
+									"key": "hospitalName",
+									"value": "市人民医院",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/health/report/upload",
+							"host": ["{{base_url}}"],
+							"path": ["api", "health", "report", "upload"]
+						}
+					}
+				},
+				{
+					"name": "AI报告解读",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "reportId",
+									"value": "报告ID",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/health/report/ai-analysis",
+							"host": ["{{base_url}}"],
+							"path": ["api", "health", "report", "ai-analysis"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "5. 慢病管理",
+			"item": [
+				{
+					"name": "获取慢病列表",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/chronic-disease/list?current=1&size=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "chronic-disease", "list"],
+							"query": [
+								{
+									"key": "current",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "获取慢病详情",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/chronic-disease/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "chronic-disease", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "慢病ID"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "获取干预方案",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/chronic-disease/intervention-plan?diseaseId=:diseaseId",
+							"host": ["{{base_url}}"],
+							"path": ["api", "chronic-disease", "intervention-plan"],
+							"query": [
+								{
+									"key": "diseaseId",
+									"value": ":diseaseId"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "AI健康趋势预测",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/chronic-disease/trend-prediction?diseaseId=:diseaseId",
+							"host": ["{{base_url}}"],
+							"path": ["api", "chronic-disease", "trend-prediction"],
+							"query": [
+								{
+									"key": "diseaseId",
+									"value": ":diseaseId"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "6. 消息提醒",
+			"item": [
+				{
+					"name": "获取用药提醒列表",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/reminder/medication?current=1&size=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reminder", "medication"],
+							"query": [
+								{
+									"key": "current",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "获取复诊提醒列表",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/reminder/appointment?current=1&size=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reminder", "appointment"],
+							"query": [
+								{
+									"key": "current",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "标记提醒为已读",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/reminder/:id/read?type=medication",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reminder", ":id", "read"],
+							"query": [
+								{
+									"key": "type",
+									"value": "medication",
+									"description": "medication 或 appointment"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "提醒ID"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "7. 档案管理",
+			"item": [
+				{
+					"name": "获取过敏史",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/profile/allergy-history",
+							"host": ["{{base_url}}"],
+							"path": ["api", "profile", "allergy-history"]
+						}
+					}
+				},
+				{
+					"name": "添加过敏史",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"allergen\": \"青霉素\",\n  \"reaction\": \"皮疹、呼吸困难\",\n  \"severity\": \"SEVERE\",\n  \"recordedDate\": \"2020-03-15\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/profile/allergy-history",
+							"host": ["{{base_url}}"],
+							"path": ["api", "profile", "allergy-history"]
+						}
+					}
+				},
+				{
+					"name": "获取过往病史",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/profile/medical-history",
+							"host": ["{{base_url}}"],
+							"path": ["api", "profile", "medical-history"]
+						}
+					}
+				},
+				{
+					"name": "获取亲友列表",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/profile/family-members",
+							"host": ["{{base_url}}"],
+							"path": ["api", "profile", "family-members"]
+						}
+					}
+				},
+				{
+					"name": "添加亲友",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"memberName\": \"张三\",\n  \"relation\": \"SPOUSE\",\n  \"memberPhone\": \"13800138000\",\n  \"permissionLevel\": \"VIEW\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/profile/family-members",
+							"host": ["{{base_url}}"],
+							"path": ["api", "profile", "family-members"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "8. 其他功能",
+			"item": [
+				{
+					"name": "获取医嘱列表",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/doctor/advice?current=1&size=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "doctor", "advice"],
+							"query": [
+								{
+									"key": "current",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "获取健康课程列表",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/health/course/list?current=1&size=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "health", "course", "list"],
+							"query": [
+								{
+									"key": "current",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "9. 文件上传",
+			"item": [
+				{
+					"name": "上传文件",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "subDir",
+									"value": "reports",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/file/upload",
+							"host": ["{{base_url}}"],
+							"path": ["api", "file", "upload"]
+						}
+					}
+				},
+				{
+					"name": "删除文件",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/file/delete?fileUrl=/upload/reports/2024/01/20/uuid.pdf",
+							"host": ["{{base_url}}"],
+							"path": ["api", "file", "delete"],
+							"query": [
+								{
+									"key": "fileUrl",
+									"value": "/upload/reports/2024/01/20/uuid.pdf"
+								}
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "token",
+			"value": ""
+		}
+	]
+}
